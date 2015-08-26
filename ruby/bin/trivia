@@ -11,6 +11,8 @@ game.add 'Chet'
 game.add 'Pat'
 game.add 'Sue'
 
+srand 1234
+
 begin
   
   game.roll(rand(5) + 1)

@@ -55,8 +55,8 @@ module UglyTrivia
           @is_getting_out_of_penalty_box = true
 
           puts "#{@players[@current_player]} is getting out of the penalty box"
-          @places[@current_player] = @places[@current_player] + roll
-          @places[@current_player] = @places[@current_player] - 12 if @places[@current_player] > 11
+          @places[@current_player] += roll
+          @places[@current_player] -= 12 if @places[@current_player] > 11
 
           puts "#{@players[@current_player]}'s new location is #{@places[@current_player]}"
           puts "The category is #{current_category}"
@@ -68,8 +68,8 @@ module UglyTrivia
 
       else
 
-        @places[@current_player] = @places[@current_player] + roll
-        @places[@current_player] = @places[@current_player] - 12 if @places[@current_player] > 11
+        @places[@current_player] += roll
+        @places[@current_player] -= 12 if @places[@current_player] > 11
 
         puts "#{@players[@current_player]}'s new location is #{@places[@current_player]}"
         puts "The category is #{current_category}"
@@ -100,49 +100,45 @@ module UglyTrivia
     end
 
   public
-
+    def good_answer
+      puts 'Answer was correct!!!!'
+      @purses[@current_player] += 1
+      puts "#{@players[@current_player]} now has #{@purses[@current_player]} Gold Coins."
+    end
     def was_correctly_answered
       if @in_penalty_box[@current_player]
+        next_player
         if @is_getting_out_of_penalty_box
-          puts 'Answer was correct!!!!'
-          @purses[@current_player] += 1
-          puts "#{@players[@current_player]} now has #{@purses[@current_player]} Gold Coins."
-
+          good_answer
           winner = did_player_win()
-          @current_player += 1
-          @current_player = 0 if @current_player == @players.length
 
           winner
         else
-          @current_player += 1
-          @current_player = 0 if @current_player == @players.length
           true
         end
 
-
-
       else
-
-        puts "Answer was corrent!!!!"
-        @purses[@current_player] += 1
-        puts "#{@players[@current_player]} now has #{@purses[@current_player]} Gold Coins."
+        good_answer
 
         winner = did_player_win
-        @current_player += 1
-        @current_player = 0 if @current_player == @players.length
-
-        return winner
+        next_player
+        
+        winner
       end
     end
-
+    
+    def next_player
+      @current_player += 1
+      @current_player = 0 if @current_player == @players.length      
+    end
+    
     def wrong_answer
   		puts 'Question was incorrectly answered'
   		puts "#{@players[@current_player]} was sent to the penalty box"
   		@in_penalty_box[@current_player] = true
 
-      @current_player += 1
-      @current_player = 0 if @current_player == @players.length
-  		return true
+      next_player
+  		true
     end
 
   private
