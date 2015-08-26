@@ -1,6 +1,27 @@
 module UglyTrivia
+  class Player
+    def initialize(name, position, score, prison)
+        @position = position
+        @score = score
+        @prison = prison
+        @name = name
+    end
+    def name
+      @name
+    end
+    def position
+      @position 
+    end
+    def score
+      @score
+    end
+    def prison
+      @prison
+    end
+  end
+
   class Game
-    def  initialize
+    def initialize
       @players = []
       @places = Array.new(6, 0)
       @purses = Array.new(6, 0)
@@ -31,7 +52,7 @@ module UglyTrivia
     end
 
     def add(player_name)
-      @players.push player_name
+      @players.push(Player.new(player_name, 0, 0, false))
       @places[how_many_players] = 0
       @purses[how_many_players] = 0
       @in_penalty_box[how_many_players] = false
@@ -41,37 +62,38 @@ module UglyTrivia
 
       true
     end
-
+    
     def how_many_players
       @players.length
     end
+    def next_position(roll)
+      @places[@current_player] += roll
+      @places[@current_player] -= 12 if @places[@current_player] > 11
+    end
 
     def roll(roll)
-      puts "#{@players[@current_player]} is the current player"
+      puts "#{@players[@current_player].name} is the current player"
       puts "They have rolled a #{roll}"
 
       if @in_penalty_box[@current_player]
         if roll % 2 != 0
           @is_getting_out_of_penalty_box = true
 
-          puts "#{@players[@current_player]} is getting out of the penalty box"
-          @places[@current_player] += roll
-          @places[@current_player] -= 12 if @places[@current_player] > 11
-
-          puts "#{@players[@current_player]}'s new location is #{@places[@current_player]}"
+          puts "#{@players[@current_player].name} is getting out of the penalty box"
+          next_position(roll)
+          puts "#{@players[@current_player].name}'s new location is #{@places[@current_player]}"
           puts "The category is #{current_category}"
           ask_question
         else
-          puts "#{@players[@current_player]} is not getting out of the penalty box"
+          puts "#{@players[@current_player].name} is not getting out of the penalty box"
           @is_getting_out_of_penalty_box = false
           end
 
       else
 
-        @places[@current_player] += roll
-        @places[@current_player] -= 12 if @places[@current_player] > 11
+        next_position(roll)
 
-        puts "#{@players[@current_player]}'s new location is #{@places[@current_player]}"
+        puts "#{@players[@current_player].name}'s new location is #{@places[@current_player]}"
         puts "The category is #{current_category}"
         ask_question
       end
@@ -103,7 +125,7 @@ module UglyTrivia
     def good_answer
       puts 'Answer was correct!!!!'
       @purses[@current_player] += 1
-      puts "#{@players[@current_player]} now has #{@purses[@current_player]} Gold Coins."
+      puts "#{@players[@current_player].name} now has #{@purses[@current_player]} Gold Coins."
     end
     def was_correctly_answered
       if @in_penalty_box[@current_player]
@@ -134,7 +156,7 @@ module UglyTrivia
     
     def wrong_answer
   		puts 'Question was incorrectly answered'
-  		puts "#{@players[@current_player]} was sent to the penalty box"
+  		puts "#{@players[@current_player].name} was sent to the penalty box"
   		@in_penalty_box[@current_player] = true
 
       next_player
